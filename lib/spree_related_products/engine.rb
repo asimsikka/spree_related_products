@@ -17,8 +17,13 @@ module SpreeRelatedProducts
     end
 
     initializer "let the main autoloader ignore this engine's overrides" do
-      overrides = root.join("app/overrides")
-      Rails.autoloaders.main.ignore(overrides)
+      if Rails.version >= "7.0"
+        # Rails 7+ approach
+        Rails.autoloaders.main.ignore(root.join("app/overrides"))
+      else
+        # Rails 6.1 approach
+        ActiveSupport::Dependencies.autoload_paths -= [root.join("app/overrides")]
+      end
     end
 
     class << self
